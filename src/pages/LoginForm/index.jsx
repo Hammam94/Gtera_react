@@ -7,7 +7,7 @@ const LoginForm = () => {
 
   const [login] = useMutation(gql`
     mutation Login ($email: String!, $password: String!) {
-      signIn(input: { params: {email: $email, password: $password, grantType: "password"}}) {
+      signIn(input: { params: {email: $email, password: $password}}) {
         user{
           id
           email
@@ -17,7 +17,7 @@ const LoginForm = () => {
     }
   `, {
     onCompleted: (response) => {
-      add('token', 'Bareer' + response.signIn.token)
+      add('token', response.signIn.token)
     }
   });
   const onSubmit = ({ email, password }) => {
