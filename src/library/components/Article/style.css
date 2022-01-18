@@ -1,0 +1,8 @@
+.title-margin {
+  margin-bottom: 3.5px;
+}
+
+.article {
+  display: flex;
+  flex-direction: column;
+}

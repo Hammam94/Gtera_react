@@ -1,25 +1,44 @@
-import logo from './logo.svg';
-import './App.css';
+import { BrowserRouter } from 'react-router-dom';
 
-function App() {
+import { AuthRoutes, LoggedInRoutes } from './routes';
+import AppLayout from './components/Layout';
+import {get} from './library/utilities/Storage'
+import { useQuery, gql } from '@apollo/client';
+
+export default function App() {
+  const {data} = useQuery(gql`
+    query currentUser {
+      fetchCurrentUser {
+        id
+        email
+        roles {
+          id
+          name
+        }
+      }
+    }
+  `,{
+    onCompleted: (response) => {
+      console.log(response);
+    },
+    onError: (error) => {
+      console.log(error);
+    }
+  })
+
+  console.log(data);
+  const isLoggedIn = () => !!get('token');
+
+  const getUserInfo = () => data && <LoggedInRoutes userInfo={data.fetchCurrentUser} />;
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
-}
-
-export default App;
+    <BrowserRouter>
+      { !isLoggedIn() && <AuthRoutes /> }
+      { isLoggedIn() && 
+        <AppLayout 
+          appContent={getUserInfo()} 
+        />
+      } 
+    </BrowserRouter>
+  )
+};
